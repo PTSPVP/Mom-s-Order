@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>สั่งของ</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#ea580c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="สั่งของ">
+<style>
+:root{--bg:#fbf8f4;--card:#fff;--ink:#222;--mut:#777;--line:#e6e0d5;--ac:#ea580c;--on:#fff;--hl:#fff1e0;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171717;--card:#232323;--ink:#eee;--mut:#9a9a9a;--line:#3a3a3a;--ac:#fb923c;--on:#2a1204;--hl:#3b2a14}}
+:root[data-theme="dark"]{--bg:#171717;--card:#232323;--ink:#eee;--mut:#9a9a9a;--line:#3a3a3a;--ac:#fb923c;--on:#2a1204;--hl:#3b2a14}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Sarabun","Noto Sans Thai",system-ui,-apple-system,sans-serif;font-size:18px;padding-bottom:100px}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:10px 12px 8px;z-index:5;border-bottom:1px solid var(--line)}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+h1{font-size:21px;margin:0}
+#edit{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:18px;padding:6px 14px;font:inherit;font-size:15px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tab{padding:10px 4px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:700}
+.tab.on{background:var(--ac);color:var(--on);border-color:var(--ac)}
+.tab small{display:block;font-weight:400;opacity:.85;font-size:13px}
+main{padding:8px 12px}
+.row{display:flex;align-items:center;flex-wrap:wrap;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px 10px 8px 14px;margin-bottom:8px}
+.row.has{background:var(--hl)}
+.nm{flex:1;min-width:90px}
+.nm small{display:block;color:var(--ac);font-size:13px;font-weight:700}
+.ctl{display:flex;align-items:center;gap:4px}
+.ctl button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:24px;line-height:1;padding:0}
+.ctl .p{background:var(--ac);color:var(--on);border-color:var(--ac)}
+.ctl input{width:60px;height:44px;text-align:center;font:inherit;font-weight:700;font-size:19px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);padding:0}
+.un{min-width:34px;font-size:14px;color:var(--mut)}
+.pb{width:100%;display:flex;align-items:center;gap:8px;font-size:16px;color:var(--mut)}
+.pb input{width:70px;height:40px;text-align:center;font:inherit;font-weight:700;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);padding:0}
+.del{border:1px solid var(--line);background:var(--card);color:#d33;border-radius:10px;padding:8px 12px;font:inherit;font-size:15px}
+.addb{width:100%;padding:14px;border-radius:14px;border:2px dashed var(--line);background:transparent;color:var(--ac);font:inherit;font-weight:700}
+.form{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.form input[type=text]{padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit}
+.form label{font-size:16px}
+.fb{display:flex;gap:8px}
+.fb button{flex:1;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:700}
+.fb .send{background:var(--ac);color:var(--on);border-color:var(--ac)}
+.mut{color:var(--mut);text-align:center}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;align-items:center;z-index:6}
+.bar .sum{font-size:13px;color:var(--mut);min-width:50px}
+.bar button{flex:1;padding:13px 4px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:700}
+.bar .send{background:var(--ac);color:var(--on);border-color:var(--ac);flex:2}
+.bar button:disabled{opacity:.4}
+#toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:#333;color:#fff;padding:8px 14px;border-radius:20px;font-size:14px;display:none;z-index:9}
+</style>
+</head>
+<body>
+<header>
+<div class="top"><h1>สั่งของ</h1><button id="edit">แก้ไข</button></div>
+<div class="tabs" id="tabs"></div>
+</header>
+<main id="list"></main>
+<div class="bar">
+<div class="sum" id="sum"></div>
+<button id="clr">ล้าง</button>
+<button id="cp">คัดลอก</button>
+<button class="send" id="send">ส่งเข้าไลน์</button>
+</div>
+<div id="toast"></div>
+<script>
+var DEF={a:{name:"อาโกว",items:[["เป็ด","ตัว"],["เนื้อปลา","โล",1],["ปลาทับทิม","ตัว"],["ปลาช่อน","ตัว"],["เลือด","ถุง"],["หน่อไม้","โล"]]},
+b:{name:"ไชยกิจ",items:[["สามชั้นไม่ดูก","แผ่น"],["หมูชิ้น","โล"],["บด A","ถุง",0,1],["โครงสับ","ถุง",0,1],["ดูกหลัง","โล"],["อ้อมคอ","แผ่น"],["ไส้ตัน","กก."]]}};
+var LK="momorder-lists-v1",QK="momorder-qty-v1",PK="momorder-pb-v1";
+function $(i){return document.getElementById(i)}
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function ld(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+var lists=ld(LK)||{a:clone(DEF.a.items),b:clone(DEF.b.items)},qty=ld(QK)||{},pbk=ld(PK)||{},cur="a",edit=false,addOpen=false,arm=-1;
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function key(n){return cur+"|"+n}
+function cnt(s){var c=0;for(var x in qty)if(x.indexOf(s+"|")===0&&qty[x]>0)c++;return c}
+function toast(t){var e=$("toast");e.textContent=t;e.style.display="block";setTimeout(function(){e.style.display="none"},1800)}
+function meta(){
+ document.querySelectorAll(".tab").forEach(function(t){var c=cnt(t.dataset.s);t.querySelector("small").textContent=c?c+" รายการ":"ยังไม่เลือก"});
+ var c2=cnt(cur);$("sum").textContent=c2?c2+" รายการ":"";$("send").disabled=$("cp").disabled=!c2}
+function render(){
+ var t="";["a","b"].forEach(function(s){t+='<button class="tab'+(s===cur?' on':'')+'" data-s="'+s+'">'+DEF[s].name+'<small></small></button>'});
+ $("tabs").innerHTML=t;
+ var h="";
+ lists[cur].forEach(function(it,i){
+  var v=qty[key(it[0])]||0;
+  h+='<div class="row'+(v?' has':'')+'"><div class="nm">'+esc(it[0])+(it[2]?'<small>ไม่เกิน</small>':'')+'</div><div class="ctl"><button data-a="m" data-i="'+i+'">−</button><input class="q" type="text" inputmode="decimal" placeholder="0" data-i="'+i+'" value="'+(v||'')+'"><button class="p" data-a="p" data-i="'+i+'">+</button><span class="un">'+esc(it[1]||"")+'</span></div>';
+  if(edit)h+='<button class="del" data-a="del" data-i="'+i+'">'+(arm===i?'ลบ?':'✕')+'</button>';
+  if(it[3])h+='<div class="pb">ถุงละ <input class="k" type="text" inputmode="decimal" placeholder="0" data-i="'+i+'" value="'+(pbk[key(it[0])]||'')+'"> โล</div>';
+  h+='</div>'});
+ if(!lists[cur].length)h='<p class="mut">ยังไม่มีรายการ</p>';
+ if(addOpen)h+='<div class="form"><input type="text" id="an" placeholder="ชื่อรายการ"><input type="text" id="au" placeholder="หน่วย (เช่น โล ตัว ถุง)"><label><input type="checkbox" id="am"> ระบุ “ไม่เกิน” (เช่น เนื้อปลา)</label><label><input type="checkbox" id="ap"> ระบุ “ถุงละกี่โล” (เช่น บด A)</label><div class="fb"><button data-a="cancel">ยกเลิก</button><button class="send" data-a="save">เพิ่ม</button></div></div>';
+ else h+='<button class="addb" data-a="add">+ เพิ่มรายการ</button>';
+ $("list").innerHTML=h;$("edit").textContent=edit?"เสร็จ":"แก้ไข";meta()}
+function msg(){
+ var d=new Date().toLocaleDateString("th-TH",{day:"numeric",month:"short"}),o="สั่งของ "+d+"\n";
+ lists[cur].forEach(function(it){var v=qty[key(it[0])];if(v>0)o+="- "+it[0]+" "+(it[2]?"ไม่เกิน ":"")+v+(it[1]?" "+it[1]:"")+(it[3]&&pbk[key(it[0])]?" (ถุงละ "+pbk[key(it[0])]+" โล)":"")+"\n"});
+ return o.trim()}
+function copyIt(m){
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(m).then(function(){toast("คัดลอกแล้ว เปิดไลน์แล้วกดวาง")},function(){prompt("คัดลอกข้อความนี้",m)})}else{prompt("คัดลอกข้อความนี้",m)}}
+document.addEventListener("click",function(e){
+ var b=e.target.closest("button");if(!b)return;
+ if(b.dataset.s){cur=b.dataset.s;addOpen=false;arm=-1;render();return}
+ var a=b.dataset.a,i=+b.dataset.i;
+ if(a==="m"||a==="p"){var n=lists[cur][i][0],v=Math.max(0,Math.round(((qty[key(n)]||0)+(a==="p"?1:-1))*100)/100);if(v)qty[key(n)]=v;else delete qty[key(n)];sv(QK,qty);render();return}
+ if(a==="del"){if(arm!==i){arm=i;render();setTimeout(function(){if(arm===i){arm=-1;render()}},3000);return}
+  delete qty[key(lists[cur][i][0])];delete pbk[key(lists[cur][i][0])];sv(PK,pbk);lists[cur].splice(i,1);arm=-1;sv(LK,lists);sv(QK,qty);render();return}
+ if(a==="add"){addOpen=true;render();setTimeout(function(){var x=$("an");if(x)x.focus()},50);return}
+ if(a==="cancel"){addOpen=false;render();return}
+ if(a==="save"){var nm=$("an").value.trim(),un=$("au").value.trim(),mx=$("am").checked;
+  if(!nm){$("an").focus();return}
+  if(lists[cur].some(function(x){return x[0]===nm})){toast("มีรายการนี้แล้ว");return}
+  lists[cur].push([nm,un,mx?1:0,$("ap").checked?1:0]);sv(LK,lists);addOpen=false;render();return}
+ if(b.id==="edit"){edit=!edit;arm=-1;render();return}
+ if(b.id==="clr"){if(!cnt(cur))return;
+  if(!b.dataset.arm){b.dataset.arm="1";b.textContent="ยืนยันเพื่อล้าง";setTimeout(function(){delete b.dataset.arm;b.textContent="ล้าง"},3000);return}
+  for(var x in qty)if(x.indexOf(cur+"|")===0)delete qty[x];delete b.dataset.arm;b.textContent="ล้าง";sv(QK,qty);render();return}
+ if(b.id==="cp"){copyIt(msg());return}
+ if(b.id==="send"){var m=msg();
+  if(/github\.io$/.test(location.hostname)){location.href="https://line.me/R/share?text="+encodeURIComponent(m)}
+  else if(navigator.share){navigator.share({text:m}).catch(function(err){if(!err||err.name!=="AbortError")copyIt(m)})}
+  else{copyIt(m)}}
+});
+document.addEventListener("input",function(e){
+ var t=e.target;if(!t.classList)return;if(t.classList.contains("k")){var it2=lists[cur][+t.dataset.i],w=parseFloat(t.value.replace(",","."));if(w>0)pbk[key(it2[0])]=w;else delete pbk[key(it2[0])];sv(PK,pbk);return}if(!t.classList.contains("q"))return;
+ var it=lists[cur][+t.dataset.i],v=parseFloat(t.value.replace(",","."));
+ if(v>0)qty[key(it[0])]=v;else delete qty[key(it[0])];
+ sv(QK,qty);t.closest(".row").classList.toggle("has",v>0);meta()});
+render();
+try{if("serviceWorker"in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register("sw.js")}catch(e){}
+</script>
+</body>
+</html>
